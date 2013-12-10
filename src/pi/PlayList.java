@@ -82,7 +82,7 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 			    String x = (up) ? "+" : "-";
 			    stdin.write(x.getBytes());
 			    stdin.flush();
-			//stdin.close();
+			    stdin.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -108,7 +108,6 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
     	String path = selection();
         String[] omxCommand = {"omxplayer", path}; 
         // PLAY item using full omxCommand
-        System.out.println(omxCommand[1]);
         try {
         	if (pause){
         		if (p != null){
@@ -116,7 +115,7 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
         		    String space = "\\s"; 
         		    stdin.write(space.getBytes()); 
         		    stdin.flush(); 
-        		//stdin.close();
+        		    stdin.close();
         		//p.waitFor();
         		}
         	}
