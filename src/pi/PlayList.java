@@ -79,10 +79,10 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 		try {
 			if (p != null){
 			    OutputStream stdin = p.getOutputStream(); 
-			    String x = (up) ? "+" : "-";
+			    String x = (up) ? "+\n" : "-\n";
 			    stdin.write(x.getBytes());
 			    stdin.flush();
-			    stdin.close();
+			    //stdin.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -94,10 +94,10 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 		try {
 			if (p != null){
 			    OutputStream stdin = p.getOutputStream(); 
-			    String q = "q";
+			    String q = "q\n";
 			    stdin.write(q.getBytes());
 			    stdin.flush();
-			    stdin.close();
+			    //stdin.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -112,11 +112,11 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
         	if (pause){
         		if (p != null){
         			OutputStream stdin = p.getOutputStream(); 
-        		    String space = "\\s"; 
+        		    String space = "\\s\n"; 
         		    stdin.write(space.getBytes()); 
         		    stdin.flush(); 
-        		    stdin.close();
-        		//p.waitFor();
+        		    //stdin.close();
+        		   //p.waitFor();
         		}
         	}
         	else{	
@@ -197,10 +197,7 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	
-        
+	}  
 	
 	private class MyMouseAdaptor extends MouseInputAdapter {
         private boolean mouseDragging = false;
