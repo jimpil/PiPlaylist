@@ -26,7 +26,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 
 
-public class PlayList extends JFrame implements ActionListener, MouseListener, KeyListener{
+public class PlayList extends JFrame implements ActionListener, KeyListener{
 	
 	private static final long serialVersionUID = -4663798205944530771L;
 	private	JPanel	topPanel = new JPanel();
@@ -56,10 +56,11 @@ public class PlayList extends JFrame implements ActionListener, MouseListener, K
 		getContentPane().add(topPanel);
 		
 		MyMouseAdaptor mma = new MyMouseAdaptor();
-		listbox.addMouseListener(this);
+		listbox.addMouseListener(mma);
 		listbox.addMouseMotionListener(mma);
 		listbox.addKeyListener(this);
 		listbox.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		//listbox.setDragEnabled(true);
 		topPanel.add(new JScrollPane(listbox), BorderLayout.CENTER);
 		buttons.setLayout(new FlowLayout());
 		openB.addActionListener(this);
@@ -107,8 +108,9 @@ public class PlayList extends JFrame implements ActionListener, MouseListener, K
     	String path = selection();
         String[] omxCommand = {"omxplayer", path}; 
         // PLAY item using full omxCommand
+        System.out.println(omxCommand[1]);
         try {
-        	if (pause)
+        	if (pause){
         		if (p != null){
         			OutputStream stdin = p.getOutputStream(); 
         		    String space = "\\s"; 
@@ -117,7 +119,7 @@ public class PlayList extends JFrame implements ActionListener, MouseListener, K
         		//stdin.close();
         		//p.waitFor();
         		}
-        	
+        	}
         	else{	
 			p = Runtime.getRuntime().exec(omxCommand);
 			//p.waitFor();
@@ -133,9 +135,8 @@ public class PlayList extends JFrame implements ActionListener, MouseListener, K
     	    for (File f : fs)
 			   myListModel.addElement(f.getCanonicalPath());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+				}
     }
 	
 	public String selection(){
@@ -160,6 +161,7 @@ public class PlayList extends JFrame implements ActionListener, MouseListener, K
 	        } 
 		}
 		else if (e.getSource() == playB)  playIt(false);
+		else if (e.getSource() == pauseB) playIt(true);
 		else if (e.getSource() == clearB) clearAll();
 		
 	}
@@ -198,36 +200,8 @@ public class PlayList extends JFrame implements ActionListener, MouseListener, K
 		
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent evt) {
-		int clicks = evt.getClickCount();
-        if (clicks == 2 || clicks == 3)  //double or triple click? 
-           playIt(false); 
-	}
+	
         
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	private class MyMouseAdaptor extends MouseInputAdapter {
         private boolean mouseDragging = false;
@@ -259,6 +233,12 @@ public class PlayList extends JFrame implements ActionListener, MouseListener, K
                 }
             }
         }
+        @Override
+    	public void mouseClicked(MouseEvent evt) {
+    		int clicks = evt.getClickCount();
+            if (clicks == 2 || clicks == 3)  //double or triple click? 
+               playIt(false); 
+    	} 
     }
 
 }
