@@ -30,14 +30,14 @@ public class PlayList extends JFrame implements ActionListener, MouseListener, K
 	
 	private static final long serialVersionUID = -4663798205944530771L;
 	private	JPanel	topPanel = new JPanel();
-	private	JPanel	buttons = new JPanel();
-	private JButton openB = new JButton("Load");
+	private	JPanel	buttons  = new JPanel();
+	private JButton openB  = new JButton("Load");
 	private JButton clearB = new JButton("Clear");
-	private JButton playB = new JButton("Play");
+	private JButton playB  = new JButton("Play");
 	private JButton pauseB = new JButton("Pause");
 	private DefaultListModel<String> myListModel = new DefaultListModel<String>();
 	private	JList<String> listbox  = new JList<String>(myListModel);
-	private final JFileChooser fc = new JFileChooser();
+	private final JFileChooser fc  = new JFileChooser();
 	private Process p;
 
 	// Constructor of main frame
@@ -151,14 +151,14 @@ public class PlayList extends JFrame implements ActionListener, MouseListener, K
 	            if (temp.isDirectory()){
 	              for (File f : temp.listFiles())
 					try {
-						myListModel.addElement(f.getCanonicalPath());
+					   myListModel.addElement(f.getCanonicalPath());
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 	            } else
 					try {
-						myListModel.addElement(temp.getCanonicalPath());
+					   myListModel.addElement(temp.getCanonicalPath());
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
