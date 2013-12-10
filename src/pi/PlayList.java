@@ -128,9 +128,14 @@ public class PlayList extends JFrame implements ActionListener, MouseListener, K
     }
 
     
-    public void append(String... ss){
-    	for (String s : ss)
-    		myListModel.addElement(s);
+    public void appendPaths(File... fs){
+    	try {
+    	    for (File f : fs)
+			   myListModel.addElement(f.getCanonicalPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     }
 	
 	public String selection(){
@@ -148,21 +153,10 @@ public class PlayList extends JFrame implements ActionListener, MouseListener, K
 			
 			if (v == JFileChooser.APPROVE_OPTION) {
 	            File temp = fc.getSelectedFile();
-	            if (temp.isDirectory()){
-	              for (File f : temp.listFiles())
-					try {
-					   myListModel.addElement(f.getCanonicalPath());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-	            } else
-					try {
-					   myListModel.addElement(temp.getCanonicalPath());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+	            if (temp.isDirectory())
+					appendPaths(temp.listFiles());
+	            else
+					appendPaths(temp);
 	        } 
 		}
 		else if (e.getSource() == playB)  playIt(false);
