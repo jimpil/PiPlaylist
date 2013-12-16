@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,6 +38,8 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 	private	JList<String> listbox  = new JList<String>(myListModel);
 	private final JFileChooser fc  = new JFileChooser();
 	private Process p;
+	private ProcessBuilder builder; 
+
 
 	// Constructor of main frame
 	public PlayList()
@@ -91,17 +92,8 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 	}
 	
 	private void stopIt(){ 
-		try {
-			if (p != null){
-			    OutputStream stdin = p.getOutputStream(); 
-			    String q = "q\n";
-			    stdin.write(q.getBytes());
-			    stdin.flush();
-			    //stdin.close();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
+		if (p != null)
+			p.destroy(); 
 	}
 
     private void playIt(boolean pause){
@@ -119,8 +111,11 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
         		   //p.waitFor();
         		}
         	}
-        	else{	
-			p = Runtime.getRuntime().exec(omxCommand);
+        	else{
+        		builder  = new ProcessBuilder(omxCommand);
+        		builder.redirectErrorStream(true);
+        	    p = builder.start();	
+			//p = Runtime.getRuntime().exec(omxCommand);
 			//p.waitFor();
         	}
 		} catch (IOException e) {
@@ -189,15 +184,10 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
-			
-	}
+	public void keyPressed(KeyEvent e) {}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}  
+	public void keyReleased(KeyEvent e) {}  
 	
 	private class MyMouseAdaptor extends MouseInputAdapter {
         private boolean mouseDragging = false;
