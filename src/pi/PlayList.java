@@ -9,9 +9,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -32,8 +32,9 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 	private	JPanel	buttons  = new JPanel();
 	private JButton openB  = new JButton("Load");
 	private JButton clearB = new JButton("Clear");
-	private JButton playB  = new JButton("Play");
-	private JButton pauseB = new JButton("Pause");
+	private JButton playB  = new JButton("Play/Pause");
+	//private JButton pauseB = new JButton("Pause");
+	private JButton stopB = new JButton("Stop");
 	private DefaultListModel<String> myListModel = new DefaultListModel<String>();
 	private	JList<String> listbox  = new JList<String>(myListModel);
 	private final JFileChooser fc  = new JFileChooser();
@@ -45,7 +46,7 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 	public PlayList()
 	{
 		// Set the frame characteristics
-		setTitle( "Pi-Playlist" );
+		setTitle("Pi-Playlist");
 		setSize( 300, 100 );
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBackground(Color.lightGray);
@@ -67,10 +68,11 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 		openB.addActionListener(this);
 		clearB.addActionListener(this);
 		playB.addActionListener(this);
-		pauseB.addActionListener(this);
+		//pauseB.addActionListener(this);
 		buttons.add(openB);
 		buttons.add(playB);
-		buttons.add(pauseB);
+		//buttons.add(pauseB);
+		buttons.add(stopB);
 		buttons.add(clearB);		
 		topPanel.add(buttons, BorderLayout.SOUTH);
 		pack();
@@ -79,8 +81,8 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 	private void volume (boolean up){
 		try {
 			if (p != null){
-			    OutputStream stdin = p.getOutputStream(); 
-			    String x = (up) ? "+\n" : "-\n";
+				BufferedOutputStream stdin = new BufferedOutputStream(p.getOutputStream());
+			    String x = up ? "+" : "-";
 			    stdin.write(x.getBytes());
 			    stdin.flush();
 			    //stdin.close();
@@ -92,8 +94,18 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 	}
 	
 	private void stopIt(){ 
-		if (p != null)
-			p.destroy(); 
+		try {
+			if (p != null){
+				BufferedOutputStream stdin = new BufferedOutputStream(p.getOutputStream()); 
+			    String x = "q";
+			    stdin.write(x.getBytes());
+			    stdin.flush();
+			    //stdin.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		
 	}
 
     private void playIt(boolean pause){
@@ -103,8 +115,8 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
         try {
         	if (pause){
         		if (p != null){
-        			OutputStream stdin = p.getOutputStream(); 
-        		    String space = "\\s\n"; 
+        			BufferedOutputStream stdin = new BufferedOutputStream(p.getOutputStream()); 
+        		    String space = " "; 
         		    stdin.write(space.getBytes()); 
         		    stdin.flush(); 
         		    //stdin.close();
@@ -112,11 +124,10 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
         		}
         	}
         	else{
+        		
         		builder  = new ProcessBuilder(omxCommand);
         		builder.redirectErrorStream(true);
-        	    p = builder.start();	
-			//p = Runtime.getRuntime().exec(omxCommand);
-			//p.waitFor();
+        		new Thread(new Controller(p, builder)).start();	
         	}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -154,8 +165,14 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 					appendPaths(temp);
 	        } 
 		}
-		else if (e.getSource() == playB)  playIt(false);
-		else if (e.getSource() == pauseB) playIt(true);
+		else if (e.getSource() == playB)  {
+			if (p == null) 
+			   playIt(false);
+			else
+				playIt(true);
+		}
+		//else if (e.getSource() == pauseB) playIt(true);
+		else if (e.getSource() == stopB)  stopIt();
 		else if (e.getSource() == clearB) clearAll();
 		
 	}
@@ -226,5 +243,25 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
                playIt(false); 
     	} 
     }
+	
+	private class Controller implements Runnable{
+		Process p;
+		ProcessBuilder pb;
+		
+		public Controller(Process p, ProcessBuilder pb){
+			this.p = p;
+			this.pb = pb;
+		}
+
+		@Override
+		public void run() {
+			try {
+				p = pb.start();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
+	}
 
 }
