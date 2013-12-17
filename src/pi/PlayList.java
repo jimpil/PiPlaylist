@@ -109,9 +109,6 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
 	}
 
     private void playIt(boolean pause){
-    	String path = selection();
-        String[] omxCommand = {"omxplayer", path}; 
-        // PLAY item using full omxCommand
         try {
         	if (pause){
         		if (p != null){
@@ -124,7 +121,9 @@ public class PlayList extends JFrame implements ActionListener, KeyListener{
         		}
         	}
         	else{
-        		
+        		String path = selection();
+                String[] omxCommand = {"omxplayer", path}; 
+                // PLAY item using full omxCommand
         		builder  = new ProcessBuilder(omxCommand);
         		builder.redirectErrorStream(true);
         		new Thread(new Controller(p, builder)).start();	
